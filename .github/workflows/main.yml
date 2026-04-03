@@ -1,0 +1,20 @@
+name: Cloud-Network-Sync
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *' # Restart každých 30 minut pro maximální stabilitu
+
+jobs:
+  run-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install aiohttp
+      - name: Execute Optimizer
+        run: python optimizer.py
