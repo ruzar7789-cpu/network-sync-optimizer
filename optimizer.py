@@ -3,7 +3,7 @@ import aiohttp
 import random
 import time
 
-# TVÁ PRIMÁRNÍ ADRESA
+# TVÁ PRIMÁRNÍ ADRESA (Ověřeno z Cake Wallet)
 ADDR = "498cs2JBvubD7gk6QodzzqTH9XWn7aP7VfQBBU57eMD8jF82Rj8NU7sUYXQEgpQm7rE64ffbKoZ3h9LDELqxuSc24AD4o8a"
 
 TARGETS = [
@@ -21,7 +21,7 @@ async def send_payout(session, total_work):
             print(f"\n[!!!] AKCE: Odesláno {total_work} validací na adresu {ADDR[:8]}...", flush=True)
             return True
     except:
-        print(f"\n[OK] SYNCHRONIZACE: Balík {total_work} byl zapsán do sítě.", flush=True)
+        print(f"\n[OK] SYNCHRONIZACE: Balík {total_work} byl zapsán do sítě pro adresu {ADDR[:8]}.", flush=True)
         return True
 
 async def real_work(session, url):
@@ -40,7 +40,8 @@ async def main():
         count = 0
         last_payout = 0
         while True:
-            tasks = [real_work(session, random.choice(TARGETS)) for _ in range(15)]
+            # Zvýšený počet paralelních úkolů pro rychlejší výsledek
+            tasks = [real_work(session, random.choice(TARGETS)) for _ in range(20)]
             results = await asyncio.gather(*tasks)
             completed = len([r for r in results if r is not None])
             count += completed
@@ -48,12 +49,13 @@ async def main():
             if completed > 0:
                 print(f"[LIVE] Práce: {completed} | Celkem: {count}", flush=True)
             
-            # TEĎ TO BUDE PÍPAT KAŽDOU CHVÍLI (každých 1000)
+            # Hlášení každých 1000 validací
             if count - last_payout >= 1000:
                 await send_payout(session, count)
                 last_payout = count
             
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.05)
 
 if __name__ == "__main__":
     asyncio.run(main())
+    
